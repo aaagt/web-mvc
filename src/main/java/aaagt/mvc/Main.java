@@ -1,5 +1,6 @@
 package aaagt.mvc;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
@@ -19,7 +20,8 @@ public class Main {
         tomcat.setConnector(connector);
 
         tomcat.getHost().setAppBase(".");
-        tomcat.addWebapp("", ".");
+        Context appContext = tomcat.addWebapp("", ".");
+
 
         tomcat.start();
         tomcat.getServer().await();
