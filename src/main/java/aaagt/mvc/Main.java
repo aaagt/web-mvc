@@ -1,19 +1,27 @@
 package aaagt.mvc;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.startup.Tomcat;
+
+import java.io.IOException;
+import java.nio.file.Files;
+
 public class Main {
-    public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+    public static void main(String[] args) throws LifecycleException, IOException {
+        final var tomcat = new Tomcat();
+        final var baseDir = Files.createTempDirectory("tomcat");
+        baseDir.toFile().deleteOnExit();
+        tomcat.setBaseDir(baseDir.toAbsolutePath().toString());
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+        final var connector = new Connector();
+        connector.setPort(9999);
+        tomcat.setConnector(connector);
 
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
-        }
+        tomcat.getHost().setAppBase(".");
+        tomcat.addWebapp("", ".");
+
+        tomcat.start();
+        tomcat.getServer().await();
     }
 }
