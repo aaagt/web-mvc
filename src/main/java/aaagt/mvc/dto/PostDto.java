@@ -1,24 +1,15 @@
-package aaagt.mvc.model;
+package aaagt.mvc.dto;
 
-public class Post {
+public class PostDto {
     private long id;
     private String content;
-    private Boolean removed = false;
 
-    public Post() {
+    public PostDto() {
     }
 
-    public Post(long id, String content) {
+    public PostDto(long id, String content) {
         this.id = id;
         this.content = content;
-    }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(Boolean removed) {
-        this.removed = removed;
     }
 
     public long getId() {

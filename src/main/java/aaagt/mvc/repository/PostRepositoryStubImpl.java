@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,11 +15,20 @@ public class PostRepositoryStubImpl implements PostRepository {
     private static final Map<Long, Post> storage = new ConcurrentHashMap<>();
 
     public List<Post> all() {
-        return storage.values().stream().toList();
+        return storage.values().stream()
+                .filter(post -> !post.getRemoved())
+                .toList();
     }
 
-    public Optional<Post> getById(long id) {
-        return Optional.ofNullable(storage.getOrDefault(id, null));
+    public Post getById(long id) {
+        if (!storage.containsKey(id)) {
+            throw new NotFoundException();
+        }
+        final var post = storage.get(id);
+        if (post.getRemoved()) {
+            throw new NotFoundException();
+        }
+        return post;
     }
 
     public Post save(Post post) {
@@ -33,6 +41,9 @@ public class PostRepositoryStubImpl implements PostRepository {
             if (!storage.containsKey(id)) {
                 throw new NotFoundException();
             }
+            if (storage.get(id).getRemoved()) {
+                throw new NotFoundException();
+            }
         }
         storage.put(id, post);
         return post;
@@ -42,6 +53,10 @@ public class PostRepositoryStubImpl implements PostRepository {
         if (!storage.containsKey(id)) {
             throw new NotFoundException();
         }
-        storage.remove(id);
+        final var post = storage.get(id);
+        if (post.getRemoved()) {
+            throw new NotFoundException();
+        }
+        post.setRemoved(true);
     }
 }
